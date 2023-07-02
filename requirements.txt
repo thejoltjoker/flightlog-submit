@@ -1,0 +1,6 @@
+requests
+xxhash
+bs4
+beautifulsoup4
+python-dateutil
+python-dotenv
