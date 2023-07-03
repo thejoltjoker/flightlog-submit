@@ -10,6 +10,7 @@ python-dateutil = "*"
 xxhash = "*"
 beautifulsoup4 = "*"
 bs4 = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

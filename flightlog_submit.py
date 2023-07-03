@@ -312,7 +312,17 @@ class FlightlogClient:
             'image': ('', '')
         }
 
-        return self._post(self.ENDPOINT, params=params, files=files, data=data)
+        response = self._post(self.ENDPOINT, params=params, files=files, data=data)
+
+        match = re.search(r'trip_id=(\d+)', response.url)
+        if match:
+            trip_id = match.group(1)
+            # Check if successful
+            if 'Edit flight' in response.text:
+                logger.debug(f'Tracklog {tracklog.path.name} uploaded successfully as trip #{trip_id}')
+                return True
+        logger.warning(f'{tracklog.path.name} failed to upload')
+        return False
 
 
 def time_string_to_datetime(time_string):
@@ -403,7 +413,7 @@ def remove_duplicate_files(path: Path):
         # Check if file hash already in list
         existing = hashes.get(checksum)
         if existing:
-            # Unlink file with longest filename
+            # Unlink file with the longest filename
             longest_filename = max([f, existing], key=lambda x: len(x.name))
             logger.info(f'Unlinking file {longest_filename.name}')
             removed.append(longest_filename)
@@ -475,11 +485,6 @@ def parse_tracklog_header(path: Path):
     Returns:
         dict: A dictionary containing the parsed header information.
 
-    Example:
-        path = Path('tracklog.txt')
-        header_data = parse_tracklog_header(path)
-        print(header_data)
-        # Output: {'date': '2023-07-02', 'pilot': 'John Doe', 'glider_type': 'Glider X', 'gps_datum': 'WGS84', 'firmware_version': '1.2.3', 'hardware_version': '2.0', 'flyskyhy_type': 'Type A', 'gps': 'Garmin', 'vario': 'XVario', 'competition_class': 'Open', 'time_zone': 'UTC+3', 'site': 'Mountain Peak'}
     """
     records = {
         'HFDTE': 'date',
@@ -516,7 +521,7 @@ def parse_tracklog_header(path: Path):
     return header
 
 
-def sleep(min_sleep=9, max_sleep=31):
+def sleep(verbose=True, min_sleep=9, max_sleep=31):
     """
     Sleeps for a random duration between min_sleep and max_sleep seconds.
 
@@ -525,7 +530,8 @@ def sleep(min_sleep=9, max_sleep=31):
         max_sleep (int): The maximum duration in seconds. Defaults to 31.
     """
     sleep_time = random.randint(min_sleep, max_sleep)
-    logger.info(f'Sleeping for {sleep_time} seconds')
+    if verbose:
+        logger.info(f'Sleeping for {sleep_time} seconds')
     time.sleep(sleep_time)
 
 
@@ -645,10 +651,8 @@ def main():
                     # Add to skip list
                     skip.append(tracklog.path.name)
 
-        sleep()
+        sleep(verbose=False)
 
 
 if __name__ == '__main__':
     main()
-    # TODO Add confirmation on upload
-    
