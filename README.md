@@ -1,6 +1,6 @@
 # Flightlog Submit
 
-> Docker container for automatically uploading tracklogs to FlightLog
+> Docker container for automatically uploading tracklogs to Flightlog
 
 Flightlog Submit is a Docker container that automates the process of uploading tracklogs to Flightlog. This repository
 provides all the necessary files and configurations to get you up and running quickly.
@@ -47,10 +47,15 @@ Flightlog Submit can be configured using environment variables. The available co
 - `TRACKLOG_PATH`: Docker mount path (default: `/log`).
 - `FLIGHTLOG_USERNAME`: Your FlightLog username.
 - `FLIGHTLOG_PASSWORD`: Your FlightLog password.
-- `USER_ID`: Interval (in minutes) between each tracklog upload (default: 60).
-- `BRANDMODEL_ID`: Glider id
+- `USER_ID`: User id.
+- `BRANDMODEL_ID`: Wing id.
+
 
 You can set these environment variables either in a `.env` file or directly in the Docker run command.
+## FAQ
+### How do I find my brandmodel id?
+Use the web inspector to find the id when you're on the _New flight_ page.
+![Brandmodel ID example](https://i.imgur.com/ki6IvB6.png "Brandmodel ID example")
 
 ## License
 
